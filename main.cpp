@@ -3,7 +3,7 @@
 int main(){
 
 Zodziu_sk("Biliunas.txt", "Rezultatas.txt");
-linkai("linkai.txt", "urls_output.txt");
+linkai("linkai.txt", "isrinkti_linkai.txt");
 
 
 }
