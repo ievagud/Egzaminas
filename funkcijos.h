@@ -12,15 +12,11 @@
 #include <algorithm>
 #include <iomanip>
 #include <vector>
-#include <regex>
 
 using namespace std;
 
 void Zodziu_sk(string tekstas, string rezultatas);
 bool Skyrybos_zenk(char x);
 void linkai(const string& tekstas, const string& rezultatas);
-
-
-
 
 #endif // FUNKCIJOS_H_INCLUDED

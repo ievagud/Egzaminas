@@ -13,6 +13,7 @@ void Zodziu_sk(string tekstas, string rezultatas) {
         return;
     }
 
+    map<string, int> zodziu_sk;
     map<string, set<int>> zdz_eil;
     string eil, zdz;
     int eil_nr = 0;
@@ -24,6 +25,7 @@ void Zodziu_sk(string tekstas, string rezultatas) {
         while (eilstr >> zdz) {
             zdz.erase(remove_if(zdz.begin(), zdz.end(), Skyrybos_zenk), zdz.end());
             if (!zdz.empty()) {
+                zodziu_sk[zdz]++;
                 zdz_eil[zdz].insert(eil_nr);
                 maxilgis = max(maxilgis, zdz.size());
             }
@@ -39,8 +41,9 @@ void Zodziu_sk(string tekstas, string rezultatas) {
     outputas << string(maxilgis + 50, '-') << endl;
 
     for (const auto& pora : zdz_eil) {
-        if (pora.second.size() > 1) {
-            outputas << left << setw(maxilgis + 10) << pora.first << left << setw(maxilgis + 10) << pora.second.size();
+        if (zodziu_sk[pora.first] > 1) {
+            outputas << left << setw(maxilgis + 10) << pora.first
+                     << left << setw(maxilgis + 10) << zodziu_sk[pora.first];
 
             auto it = pora.second.begin();
             outputas << *it;
@@ -57,25 +60,37 @@ void Zodziu_sk(string tekstas, string rezultatas) {
 
 void linkai(const string& tekstas, const string& rezultatas) {
     ifstream inputas(tekstas);
-    ofstream outputas(rezultatas);
-    string eil;
-
-    regex linkas(R"((https?:\/\/[^\s]+)|(www\.[^\s]+))");
-
     if (!inputas.is_open()) {
         cerr << "Nepavyko atidaryti failo" << endl;
         return;
     }
 
+    ofstream outputas(rezultatas);
+    string eil;
+
     while (getline(inputas, eil)) {
-        smatch url;
-        while (regex_search(eil, url, linkas)) {
-            outputas << url[0] << endl;
-            eil = url.suffix().str();
+        size_t ind = 0;
+        while (ind < eil.length()) {
+            size_t httpInd = eil.find("http://", ind);
+            size_t httpsInd = eil.find("https://", ind);
+            size_t wwwInd = eil.find("www.", ind);
+
+            size_t ind1 = min({httpInd, httpsInd, wwwInd});
+
+            if (ind1 != string::npos) {
+                size_t pask_ind = eil.find(' ', ind1);
+                if (pask_ind == string::npos) {
+                    pask_ind = eil.length();
+                }
+                string url = eil.substr(ind1, pask_ind - ind1);
+                outputas << url << endl;
+                ind = pask_ind;
+            } else {
+                break;
+            }
         }
     }
 
     inputas.close();
     outputas.close();
 }
-
